@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — WeightWise</title>
+<meta name="description" content="About WeightWise — free, accurate weight and health calculators for everyone.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1917; --ink-2: #4a4845; --ink-3: #8a8784;
+    --paper: #f7f5f0; --paper-2: #edeae3; --paper-3: #e2dfd7;
+    --accent: #2d6a4f; --accent-light: #d8ede3;
+    --border: rgba(26,25,23,0.12); --radius: 4px; --radius-lg: 8px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); font-size: 16px; line-height: 1.6; min-height: 100vh; }
+  header { border-bottom: 1px solid var(--border); padding: 0 2rem; background: var(--paper); }
+  .header-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--ink); text-decoration: none; letter-spacing: -0.02em; }
+  .logo span { color: var(--accent); }
+  nav { display: flex; gap: 6px; }
+  nav a { font-size: 13px; color: var(--ink-2); text-decoration: none; padding: 5px 10px; border-radius: var(--radius); transition: background .15s; white-space: nowrap; }
+  nav a:hover { background: var(--paper-2); }
+
+  .content { max-width: 640px; margin: 0 auto; padding: 3rem 2rem 4rem; }
+  h1 { font-family: 'DM Serif Display', serif; font-size: 36px; letter-spacing: -0.03em; margin-bottom: 2rem; }
+  h2 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; letter-spacing: -0.02em; margin: 2rem 0 .75rem; }
+  p { font-size: 15px; color: var(--ink-2); line-height: 1.7; margin-bottom: 1rem; }
+  p:last-child { margin-bottom: 0; }
+  a { color: var(--accent); }
+
+  footer { border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; font-size: 12px; color: var(--ink-3); }
+  footer a { color: var(--ink-2); text-decoration: none; margin: 0 8px; }
+  footer a:hover { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo">weight<span>wise</span></a>
+    <nav>
+      <a href="bmi-calculator.html">BMI</a>
+      <a href="ideal-weight-calculator.html">Ideal weight</a>
+      <a href="calorie-deficit-calculator.html">Calorie deficit</a>
+      <a href="body-fat-calculator.html">Body fat %</a>
+      <a href="bmr-calculator.html">BMR</a>
+      <a href="weight-loss-timeline-calculator.html">Timeline</a>
+    </nav>
+  </div>
+</header>
+
+<div class="content">
+  <h1>About WeightWise</h1>
+
+  <p>WeightWise is a collection of free, accurate health calculators designed to help you understand your body and make informed decisions about your weight and fitness.</p>
+
+  <h2>What we offer</h2>
+  <p>Six calculators covering the most commonly needed health metrics: BMI, calorie deficit, basal metabolic rate, ideal weight, body fat percentage, and weight loss timeline. Every calculator works instantly in your browser — no account, no email, no tracking.</p>
+
+  <h2>How the calculators work</h2>
+  <p>Each calculator is built on established, peer-reviewed formulas used in clinical and research settings. We use the Mifflin–St Jeor equation for BMR, the WHO BMI classification, the U.S. Navy circumference method for body fat, and WHO healthy BMI ranges for ideal weight. Where relevant, we show the exact formula used so you can verify the maths yourself.</p>
+
+  <h2>Accuracy and limitations</h2>
+  <p>These calculators provide estimates based on population-level research. Individual results vary based on factors including muscle mass, hydration, age, and genetics. The results are intended as useful reference points, not clinical diagnoses. Always consult a qualified healthcare professional before making significant changes to your diet or exercise routine.</p>
+
+  <h2>Contact</h2>
+  <p>Questions or feedback? Reach us at <a href="mailto:hello@usefitcalc.com">hello@usefitcalc.com</a>.</p>
+</div>
+
+<footer>
+  <p>WeightWise calculators are for informational purposes only and do not constitute medical advice.</p>
+  <p style="margin-top:.5rem">
+    <a href="index.html">Home</a>
+    <a href="privacy.html">Privacy Policy</a>
+  </p>
+</footer>
+
+</body>
+</html>

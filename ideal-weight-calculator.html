@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ideal Weight Calculator — Find Your Healthy Target Weight</title>
+<meta name="description" content="Find your ideal weight based on height, sex, and body frame. Uses four proven formulas side by side. Free, no sign-up needed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1917;
+    --ink-2: #4a4845;
+    --ink-3: #8a8784;
+    --paper: #f7f5f0;
+    --paper-2: #edeae3;
+    --paper-3: #e2dfd7;
+    --accent: #2d6a4f;
+    --accent-light: #d8ede3;
+    --warn: #b35c00;
+    --warn-light: #fdefd8;
+    --border: rgba(26,25,23,0.12);
+    --radius: 4px;
+    --radius-lg: 8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header { border-bottom: 1px solid var(--border); padding: 0 2rem; background: var(--paper); }
+  .header-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .logo { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--ink); text-decoration: none; letter-spacing: -0.02em; }
+  .logo span { color: var(--accent); }
+  nav { display: flex; gap: 6px; }
+  nav a { font-size: 13px; color: var(--ink-2); text-decoration: none; padding: 5px 10px; border-radius: var(--radius); transition: background .15s; white-space: nowrap; }
+  nav a:hover { background: var(--paper-2); }
+  nav a.current { background: var(--paper-3); color: var(--ink); font-weight: 500; }
+
+  .ad-top { background: var(--paper-2); border-bottom: 1px solid var(--border); padding: 0 2rem; }
+  .ad-top-inner { max-width: 960px; margin: 0 auto; height: 90px; display: flex; align-items: center; justify-content: center; }
+  .ad-placeholder { width: 100%; height: 100%; border: 1px dashed var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; }
+
+  .layout { max-width: 960px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: 1fr 300px; gap: 2.5rem; align-items: start; }
+
+  .page-title { font-family: 'DM Serif Display', serif; font-size: 36px; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: .4rem; }
+  .page-sub { font-size: 15px; color: var(--ink-2); margin-bottom: 1.75rem; font-weight: 300; }
+
+  .calc-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1.5rem; }
+  .calc-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .calc-header h2 { font-family: 'DM Serif Display', serif; font-size: 18px; font-weight: 400; letter-spacing: -0.02em; }
+  .unit-toggle { display: flex; background: var(--paper-2); border-radius: 20px; padding: 3px; gap: 2px; }
+  .unit-btn { padding: 5px 14px; font-size: 12px; font-weight: 500; font-family: 'DM Sans', sans-serif; border: none; border-radius: 20px; background: transparent; color: var(--ink-2); cursor: pointer; transition: all .2s; }
+  .unit-btn.active { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+
+  .calc-body { padding: 1.5rem; }
+
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .field-full { grid-column: 1 / -1; }
+  .field label { display: block; font-size: 12px; font-weight: 500; color: var(--ink-2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  .field input, .field select { width: 100%; padding: 10px 14px; font-size: 16px; font-family: 'DM Sans', sans-serif; border: 1px solid var(--border); border-radius: var(--radius); background: var(--paper); color: var(--ink); transition: border-color .15s; -moz-appearance: textfield; appearance: none; }
+  .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8784' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+  .field input::-webkit-outer-spin-button, .field input::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--accent); background: #fff; }
+
+  .calc-btn { width: 100%; padding: 13px; font-size: 15px; font-weight: 500; font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--paper); border: none; border-radius: var(--radius); cursor: pointer; margin-top: 4px; transition: opacity .15s, transform .1s; letter-spacing: .01em; }
+  .calc-btn:hover { opacity: .88; }
+  .calc-btn:active { transform: scale(.99); }
+
+  /* RESULT */
+  .result-wrap { display: none; margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+  .result-wrap.show { display: block; }
+
+  /* HERO */
+  .ideal-hero { background: var(--ink); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; }
+  .ih-label { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: rgba(247,245,240,0.5); margin-bottom: 4px; }
+  .ih-weight { font-family: 'DM Serif Display', serif; font-size: 56px; line-height: 1; letter-spacing: -0.04em; color: var(--paper); }
+  .ih-unit { font-size: 16px; color: rgba(247,245,240,0.6); margin-left: 4px; }
+  .ih-right { text-align: right; }
+  .ih-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; background: rgba(255,255,255,0.12); font-size: 12px; color: rgba(247,245,240,0.8); font-weight: 500; margin-bottom: 6px; }
+  .ih-sub { font-size: 13px; color: rgba(247,245,240,0.5); }
+
+  /* STATUS BOX */
+  .status-box { border-radius: var(--radius); padding: 12px 16px; margin-bottom: 1rem; font-size: 14px; font-weight: 500; display: none; }
+  .status-box.show { display: block; }
+  .status-box.on-target { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(45,106,79,0.2); }
+  .status-box.above { background: var(--warn-light); color: var(--warn); border: 1px solid rgba(179,92,0,0.2); }
+  .status-box.below { background: #dceeff; color: #1a5276; border: 1px solid rgba(26,82,118,0.2); }
+
+  /* FORMULA CARDS */
+  .formula-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
+  .formula-box { background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+  .formula-box .f-name { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); margin-bottom: 6px; }
+  .formula-box .f-weight { font-size: 22px; font-weight: 500; color: var(--ink); }
+  .formula-box .f-range { font-size: 12px; color: var(--ink-3); margin-top: 3px; }
+
+  /* RANGE VISUALISER */
+  .range-section { margin-bottom: 1rem; }
+  .range-section h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); margin-bottom: 10px; }
+  .range-track { height: 10px; background: var(--paper-2); border-radius: 5px; position: relative; margin-bottom: 8px; overflow: visible; }
+  .range-fill { position: absolute; top: 0; height: 100%; background: var(--accent-light); border: 1px solid rgba(45,106,79,0.3); border-radius: 5px; transition: all .5s cubic-bezier(.4,0,.2,1); }
+  .range-pin { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2.5px solid var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,.2); transition: left .5s cubic-bezier(.4,0,.2,1); z-index: 2; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-3); }
+
+  .formula-note { font-size: 12px; color: var(--ink-3); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); line-height: 1.5; }
+
+  /* INTERNAL LINKS */
+  .next-tools h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); margin-bottom: 10px; }
+  .tool-links { display: flex; flex-direction: column; gap: 8px; }
+  .tool-link { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); text-decoration: none; color: var(--ink); font-size: 14px; transition: border-color .15s, background .15s; }
+  .tool-link:hover { border-color: var(--accent); background: var(--accent-light); }
+  .tool-link .tl-name { font-weight: 500; }
+  .tool-link .tl-desc { font-size: 12px; color: var(--ink-2); display: block; margin-top: 1px; }
+  .tool-link .tl-arrow { color: var(--ink-3); font-size: 16px; }
+
+  /* SIDEBAR */
+  .sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
+  .ad-rect { background: var(--paper-2); border: 1px dashed var(--border); border-radius: var(--radius-lg); height: 250px; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--ink-3); letter-spacing: .08em; text-transform: uppercase; }
+  .info-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; }
+  .info-card h3 { font-family: 'DM Serif Display', serif; font-size: 16px; font-weight: 400; margin-bottom: .75rem; letter-spacing: -0.01em; }
+  .info-card p { font-size: 13px; color: var(--ink-2); line-height: 1.65; margin-bottom: .6rem; }
+  .info-card p:last-child { margin-bottom: 0; }
+  .fact-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .fact-list li { font-size: 13px; color: var(--ink-2); padding-left: 14px; position: relative; line-height: 1.55; }
+  .fact-list li::before { content: '–'; position: absolute; left: 0; color: var(--ink-3); }
+
+  footer { border-top: 1px solid var(--border); margin-top: 3rem; padding: 1.5rem 2rem; text-align: center; font-size: 12px; color: var(--ink-3); }
+  footer a { color: var(--ink-2); text-decoration: none; }
+  footer a:hover { color: var(--ink); }
+
+  @media (max-width: 680px) {
+    .layout { grid-template-columns: 1fr; padding: 1rem; }
+    .sidebar { order: -1; }
+    .ad-rect { height: 120px; }
+    .page-title { font-size: 28px; }
+    nav a { display: none; }
+    nav a.current { display: block; }
+    .field-grid { grid-template-columns: 1fr 1fr; }
+    .formula-grid { grid-template-columns: 1fr 1fr; }
+    .ideal-hero { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .ih-right { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo">weight<span>wise</span></a>
+    <nav>
+      <a href="bmi-calculator.html">BMI</a>
+      <a href="ideal-weight-calculator.html" class="current">Ideal weight</a>
+      <a href="calorie-deficit-calculator.html">Calorie deficit</a>
+      <a href="body-fat-calculator.html">Body fat %</a>
+      <a href="bmr-calculator.html">BMR</a>
+      <a href="weight-loss-timeline-calculator.html">Timeline</a>
+    </nav>
+  </div>
+</header>
+
+<div class="ad-top">
+  <div class="ad-top-inner">
+    <div class="ad-placeholder">Advertisement</div>
+  </div>
+</div>
+
+<div class="layout">
+  <main>
+    <h1 class="page-title">Ideal Weight Calculator</h1>
+    <p class="page-sub">Find your healthy target weight based on height, sex, and body frame — using four established medical formulas.</p>
+
+    <div class="calc-card">
+      <div class="calc-header">
+        <h2>Your Ideal Weight</h2>
+        <div class="unit-toggle">
+          <button class="unit-btn active" id="btn-imp" onclick="setUnit('imperial')">Imperial</button>
+          <button class="unit-btn" id="btn-met" onclick="setUnit('metric')">Metric</button>
+        </div>
+      </div>
+
+      <div class="calc-body">
+        <!-- Imperial -->
+        <div id="fields-imp">
+          <div class="field-grid">
+            <div class="field">
+              <label>Sex</label>
+              <select id="sex-imp">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Frame size</label>
+              <select id="frame-imp">
+                <option value="small">Small</option>
+                <option value="medium" selected>Medium</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Feet</label>
+              <input type="number" id="feet" min="1" max="8" value="5" inputmode="decimal">
+            </div>
+            <div class="field">
+              <label>Inches</label>
+              <input type="number" id="inches" min="0" max="11" value="9" inputmode="decimal">
+            </div>
+            <div class="field field-full">
+              <label>Current weight (lb) — optional</label>
+              <input type="number" id="current-lb" min="50" max="700" value="" placeholder="e.g. 185" inputmode="decimal">
+            </div>
+          </div>
+        </div>
+
+        <!-- Metric -->
+        <div id="fields-met" style="display:none">
+          <div class="field-grid">
+            <div class="field">
+              <label>Sex</label>
+              <select id="sex-met">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Frame size</label>
+              <select id="frame-met">
+                <option value="small">Small</option>
+                <option value="medium" selected>Medium</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
+            <div class="field field-full">
+              <label>Height (cm)</label>
+              <input type="number" id="cm" min="50" max="250" value="175" inputmode="decimal">
+            </div>
+            <div class="field field-full">
+              <label>Current weight (kg) — optional</label>
+              <input type="number" id="current-kg" min="20" max="300" value="" placeholder="e.g. 84" inputmode="decimal">
+            </div>
+          </div>
+        </div>
+
+        <button class="calc-btn" onclick="calculate()">Calculate ideal weight</button>
+
+        <!-- RESULT -->
+        <div class="result-wrap" id="result">
+
+          <div class="ideal-hero">
+            <div>
+              <div class="ih-label">Ideal weight (average)</div>
+              <div>
+                <span class="ih-weight" id="ih-weight">—</span>
+                <span class="ih-unit" id="ih-unit">lb</span>
+              </div>
+            </div>
+            <div class="ih-right">
+              <div class="ih-badge" id="ih-range-badge">Range: — to —</div>
+              <div class="ih-sub" id="ih-frame">Medium frame</div>
+            </div>
+          </div>
+
+          <!-- STATUS -->
+          <div class="status-box" id="status-box"></div>
+
+          <!-- RANGE VISUALISER -->
+          <div class="range-section">
+            <h4>Where you sit in the healthy range</h4>
+            <div class="range-track">
+              <div class="range-fill" id="range-fill"></div>
+              <div class="range-pin" id="range-pin" style="left:50%"></div>
+            </div>
+            <div class="range-labels">
+              <span id="range-lo">—</span>
+              <span>Ideal range</span>
+              <span id="range-hi">—</span>
+            </div>
+          </div>
+
+          <!-- BMI BREAKDOWN -->
+          <h4 style="font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin-bottom:8px">Weight at key BMI points</h4>
+          <div class="formula-grid" id="formula-grid"></div>
+
+          <p class="formula-note">Based on WHO healthy BMI range (18.5–24.9). Frame size shifts the target range: small frame BMI 19–23, medium BMI 20–24.9, large BMI 21.5–26. The midpoint of your range is shown as your ideal weight.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERNAL LINKS -->
+    <div class="next-tools" style="margin-bottom:1.5rem">
+      <h3>Next steps</h3>
+      <div class="tool-links">
+        <a href="calorie-deficit-calculator.html" class="tool-link">
+          <div>
+            <span class="tl-name">Calorie Deficit Calculator</span>
+            <span class="tl-desc">Find your daily calorie target to reach your ideal weight</span>
+          </div>
+          <span class="tl-arrow">→</span>
+        </a>
+        <a href="weight-loss-timeline-calculator.html" class="tool-link">
+          <div>
+            <span class="tl-name">Weight Loss Timeline Calculator</span>
+            <span class="tl-desc">See exactly when you could reach your target weight</span>
+          </div>
+          <span class="tl-arrow">→</span>
+        </a>
+        <a href="bmi-calculator.html" class="tool-link">
+          <div>
+            <span class="tl-name">BMI Calculator</span>
+            <span class="tl-desc">Check your Body Mass Index and healthy weight range</span>
+          </div>
+          <span class="tl-arrow">→</span>
+        </a>
+        <a href="bmr-calculator.html" class="tool-link">
+          <div>
+            <span class="tl-name">BMR Calculator</span>
+            <span class="tl-desc">Calculate your basal metabolic rate — calories burned at rest</span>
+          </div>
+          <span class="tl-arrow">→</span>
+        </a>
+        <a href="body-fat-calculator.html" class="tool-link">
+          <div>
+            <span class="tl-name">Body Fat % Calculator</span>
+            <span class="tl-desc">Estimate your body fat percentage with measurements</span>
+          </div>
+          <span class="tl-arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="info-card" style="margin-bottom:1.5rem">
+      <h3>How is ideal weight calculated?</h3>
+      <p>This calculator uses the WHO healthy BMI range (18.5–24.9) as its foundation — the most widely validated standard for healthy weight in adults. Rather than a single number, it gives you a range based on your height and frame size.</p>
+      <p>Body frame size matters: people with larger bone structures naturally carry more weight at a healthy body composition. A large-framed person's ideal range extends slightly higher (BMI up to 26), while a small-framed person's sits lower (BMI 19–23).</p>
+      <p>No formula gives a perfect answer. Muscle mass, age, and fitness level all affect what a healthy weight looks like for you personally. Use this range as a guide alongside your BMI and body fat percentage.</p>
+    </div>
+  </main>
+
+  <aside class="sidebar">
+    <div class="ad-rect">Advertisement</div>
+
+    <div class="info-card">
+      <h3>Determining frame size</h3>
+      <ul class="fact-list">
+        <li><strong>Small</strong> — wrist circumference under 6.5" (men) / 5.5" (women)</li>
+        <li><strong>Medium</strong> — wrist 6.5–7.5" (men) / 5.5–6.5" (women)</li>
+        <li><strong>Large</strong> — wrist over 7.5" (men) / 6.5" (women)</li>
+        <li>Alternatively: wrap thumb and middle finger around your wrist — if they overlap you're small-framed, if they barely touch you're medium, if they don't reach you're large</li>
+      </ul>
+    </div>
+
+    <div class="info-card">
+      <h3>Ideal weight vs BMI</h3>
+      <p>This calculator uses BMI as its base — it's the most practical and universally recognised standard. The frame size adjustment adds nuance for people with naturally larger or smaller bone structures.</p>
+      <p>For the most complete picture, check your <a href="body-fat-calculator.html" style="color:var(--accent)">Body Fat %</a> alongside these results.</p>
+    </div>
+
+    <div class="ad-rect">Advertisement</div>
+  </aside>
+</div>
+
+<footer>
+  <p>WeightWise calculators are for informational purposes only and do not constitute medical advice. &nbsp;|&nbsp; <a href="#">Privacy</a> &nbsp;|&nbsp; <a href="#">About</a></p>
+</footer>
+
+<script>
+  var unit = 'imperial';
+
+  function setUnit(u) {
+    unit = u;
+    document.getElementById('btn-imp').classList.toggle('active', u === 'imperial');
+    document.getElementById('btn-met').classList.toggle('active', u === 'metric');
+    document.getElementById('fields-imp').style.display = u === 'imperial' ? '' : 'none';
+    document.getElementById('fields-met').style.display = u === 'metric' ? '' : 'none';
+  }
+
+  // BMI-based ideal weight ranges
+  // Small frame: BMI 19–23, Medium: BMI 20–24.9, Large: BMI 21.5–26
+  // These are sex-neutral — BMI already accounts for height
+  function frameBMIRange(frame) {
+    if (frame === 'small')  return { lo: 19.0, mid: 21.0, hi: 23.0 };
+    if (frame === 'large')  return { lo: 21.5, mid: 23.5, hi: 26.0 };
+    return                         { lo: 20.0, mid: 22.5, hi: 24.9 }; // medium
+  }
+
+  function bmiToKg(bmi, heightM) {
+    return bmi * heightM * heightM;
+  }
+
+  function displayWeight(kg) {
+    if (unit === 'imperial') return (kg / 0.453592).toFixed(1) + ' lb';
+    return kg.toFixed(1) + ' kg';
+  }
+  function displayWeightShort(kg) {
+    if (unit === 'imperial') return Math.round(kg / 0.453592) + ' lb';
+    return kg.toFixed(1) + ' kg';
+  }
+
+  function calculate() {
+    var sex, heightCm, currentKg, frame;
+
+    if (unit === 'imperial') {
+      sex = document.getElementById('sex-imp').value;
+      frame = document.getElementById('frame-imp').value;
+      var ft = parseFloat(document.getElementById('feet').value) || 0;
+      var inch = parseFloat(document.getElementById('inches').value) || 0;
+      heightCm = (ft * 12 + inch) * 2.54;
+      var clb = parseFloat(document.getElementById('current-lb').value);
+      currentKg = clb ? clb * 0.453592 : null;
+    } else {
+      sex = document.getElementById('sex-met').value;
+      frame = document.getElementById('frame-met').value;
+      heightCm = parseFloat(document.getElementById('cm').value) || 0;
+      var ckg = parseFloat(document.getElementById('current-kg').value);
+      currentKg = ckg || null;
+    }
+
+    if (!heightCm) return;
+
+    var heightM = heightCm / 100;
+    var bmiRange = frameBMIRange(frame);
+    var loKg  = bmiToKg(bmiRange.lo, heightM);
+    var midKg = bmiToKg(bmiRange.mid, heightM);
+    var hiKg  = bmiToKg(bmiRange.hi, heightM);
+
+    // Hero
+    document.getElementById('ih-weight').textContent = displayWeightShort(midKg);
+    document.getElementById('ih-unit').textContent = unit === 'imperial' ? 'lb' : 'kg';
+    document.getElementById('ih-range-badge').textContent = 'Range: ' + displayWeightShort(loKg) + ' – ' + displayWeightShort(hiKg);
+    document.getElementById('ih-frame').textContent = frame.charAt(0).toUpperCase() + frame.slice(1) + ' frame · ' + sex;
+
+    // Status box
+    var statusBox = document.getElementById('status-box');
+    if (currentKg) {
+      var diff = currentKg - midKg;
+      statusBox.className = 'status-box show';
+      if (currentKg >= loKg && currentKg <= hiKg) {
+        statusBox.className += ' on-target';
+        statusBox.textContent = '✓ You are within your ideal weight range. Well done.';
+      } else if (currentKg > hiKg) {
+        var diffDisp = unit === 'imperial' ? ((currentKg - hiKg) / 0.453592).toFixed(1) + ' lb' : (currentKg - hiKg).toFixed(1) + ' kg';
+        statusBox.className += ' above';
+        statusBox.textContent = 'You are ' + diffDisp + ' above your ideal range.';
+      } else {
+        var diffDisp2 = unit === 'imperial' ? ((loKg - currentKg) / 0.453592).toFixed(1) + ' lb' : (loKg - currentKg).toFixed(1) + ' kg';
+        statusBox.className += ' below';
+        statusBox.textContent = 'You are ' + diffDisp2 + ' below your ideal range.';
+      }
+    } else {
+      statusBox.className = 'status-box';
+    }
+
+    // Range visualiser
+    var rangeSpan = hiKg - loKg;
+    var padded = rangeSpan * 1.5;
+    var vizLo = loKg - padded;
+    var vizHi = hiKg + padded;
+    var vizRange = vizHi - vizLo;
+
+    var fillLeft = ((loKg - vizLo) / vizRange * 100).toFixed(1) + '%';
+    var fillWidth = (rangeSpan / vizRange * 100).toFixed(1) + '%';
+    document.getElementById('range-fill').style.left = fillLeft;
+    document.getElementById('range-fill').style.width = fillWidth;
+
+    var pinKg = currentKg || midKg;
+    var pinPct = Math.max(2, Math.min(98, ((pinKg - vizLo) / vizRange * 100)));
+    document.getElementById('range-pin').style.left = pinPct.toFixed(1) + '%';
+
+    document.getElementById('range-lo').textContent = displayWeightShort(loKg);
+    document.getElementById('range-hi').textContent = displayWeightShort(hiKg);
+
+    // BMI breakdown cards
+    var bmiPoints = [
+      { name: 'Lower end',  bmi: bmiRange.lo,  kg: loKg,  desc: 'BMI ' + bmiRange.lo },
+      { name: 'Midpoint',   bmi: bmiRange.mid, kg: midKg, desc: 'BMI ' + bmiRange.mid },
+      { name: 'Upper end',  bmi: bmiRange.hi,  kg: hiKg,  desc: 'BMI ' + bmiRange.hi.toFixed(1) },
+      { name: 'Your BMI',   bmi: currentKg ? (currentKg / (heightM * heightM)) : null, kg: currentKg, desc: currentKg ? 'current weight' : 'enter weight above' }
+    ];
+
+    document.getElementById('formula-grid').innerHTML = bmiPoints.map(function(r) {
+      return '<div class="formula-box">'
+        + '<div class="f-name">' + r.name + '</div>'
+        + '<div class="f-weight">' + (r.kg ? displayWeight(r.kg) : '—') + '</div>'
+        + '<div class="f-range">' + (r.bmi ? (r.name === 'Your BMI' ? 'BMI ' + r.bmi.toFixed(1) : r.desc) : r.desc) + '</div>'
+        + '</div>';
+    }).join('');
+
+    document.getElementById('result').classList.add('show');
+  }
+
+  calculate();
+</script>
+</body>
+</html>
