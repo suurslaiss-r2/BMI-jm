@@ -216,6 +216,11 @@
               <input type="number" id="inches" min="0" max="11" value="9" inputmode="decimal">
             </div>
             <div class="field field-full">
+              <label>Weight (lb) — optional</label>
+              <input type="number" id="weight-imp" min="50" max="700" placeholder="e.g. 185" step="0.1" inputmode="decimal">
+              <p class="measure-hint">Used to calculate fat mass and lean mass.</p>
+            </div>
+            <div class="field field-full">
               <label>Neck circumference (in)</label>
               <input type="number" id="neck-imp" min="8" max="24" value="15" step="0.1" inputmode="decimal">
               <p class="measure-hint">Measure below the larynx (Adam's apple), tilting head slightly forward.</p>
@@ -254,6 +259,11 @@
               <label>Hip circumference (cm)</label>
               <input type="number" id="hip-met" min="60" max="200" value="100" step="0.1" inputmode="decimal">
               <p class="measure-hint">Measure at the widest point of the hips/buttocks.</p>
+            </div>
+            <div class="field field-full">
+              <label>Weight (kg) — optional</label>
+              <input type="number" id="weight-met" min="20" max="300" placeholder="e.g. 84" step="0.1" inputmode="decimal">
+              <p class="measure-hint">Used to calculate fat mass and lean mass.</p>
             </div>
           </div>
         </div>
@@ -447,6 +457,7 @@
     var sex = document.getElementById('sex').value;
     var heightCm, neckCm, waistCm, hipCm;
 
+    var weightKg = null;
     if (unit === 'imperial') {
       var ft = parseFloat(document.getElementById('feet').value) || 0;
       var inch = parseFloat(document.getElementById('inches').value) || 0;
@@ -454,11 +465,15 @@
       neckCm  = (parseFloat(document.getElementById('neck-imp').value)  || 0) * 2.54;
       waistCm = (parseFloat(document.getElementById('waist-imp').value) || 0) * 2.54;
       hipCm   = sex === 'female' ? (parseFloat(document.getElementById('hip-imp').value) || 0) * 2.54 : 0;
+      var wlb = parseFloat(document.getElementById('weight-imp').value);
+      if (wlb) weightKg = wlb * 0.453592;
     } else {
       heightCm = parseFloat(document.getElementById('cm').value) || 0;
       neckCm   = parseFloat(document.getElementById('neck-met').value)  || 0;
       waistCm  = parseFloat(document.getElementById('waist-met').value) || 0;
       hipCm    = sex === 'female' ? parseFloat(document.getElementById('hip-met').value) || 0 : 0;
+      var wkg = parseFloat(document.getElementById('weight-met').value);
+      if (wkg) weightKg = wkg;
     }
 
     if (!heightCm || !neckCm || !waistCm) return;
@@ -492,11 +507,27 @@
       return '<span>' + l + '</span>';
     }).join('');
 
-    // Fat mass / lean mass — need weight for this, show note if not available
-    document.getElementById('m-fat-mass').textContent = '—';
-    document.getElementById('m-lean-mass').textContent = '—';
-    document.getElementById('m-fat-mass-unit').textContent = 'enter weight in BMI calc';
-    document.getElementById('m-lean-mass-unit').textContent = 'for fat/lean mass';
+    // Fat mass / lean mass
+    if (weightKg) {
+      var fatKg  = weightKg * (bf / 100);
+      var leanKg = weightKg - fatKg;
+      if (unit === 'imperial') {
+        document.getElementById('m-fat-mass').textContent  = (fatKg  / 0.453592).toFixed(1);
+        document.getElementById('m-lean-mass').textContent = (leanKg / 0.453592).toFixed(1);
+        document.getElementById('m-fat-mass-unit').textContent  = 'lb of fat';
+        document.getElementById('m-lean-mass-unit').textContent = 'lb of lean mass';
+      } else {
+        document.getElementById('m-fat-mass').textContent  = fatKg.toFixed(1);
+        document.getElementById('m-lean-mass').textContent = leanKg.toFixed(1);
+        document.getElementById('m-fat-mass-unit').textContent  = 'kg of fat';
+        document.getElementById('m-lean-mass-unit').textContent = 'kg of lean mass';
+      }
+    } else {
+      document.getElementById('m-fat-mass').textContent  = '—';
+      document.getElementById('m-lean-mass').textContent = '—';
+      document.getElementById('m-fat-mass-unit').textContent  = 'add weight above';
+      document.getElementById('m-lean-mass-unit').textContent = 'add weight above';
+    }
 
     // Category table
     var cats = getCategories(sex);
